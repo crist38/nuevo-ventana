@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blueprint-dark: #0f172a;
+  --color-blueprint-grid: #1e293b;
+  --color-blueprint-line: #3b82f6;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

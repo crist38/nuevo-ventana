@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función para verificar si el usuario es administrador
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'cristian3877@gmail.com' || 
+         request.auth.token.email == 'nscri284@gmail.com' ||
+         request.auth.token.email == 'admin@ejemplo.com');
+    }
+
+    // Reglas para Materiales (NUEVO)
+    match /materiales/{materialId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Reglas para Presupuestos
+    match /presupuestos/{presupuestoId} {
+      allow read, write: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null;
+    }
+
+    // Reglas para Presupuestos Termopaneles
+    match /presupuestos_termopaneles/{presupuestoId} {
+      allow read, write: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null;
+    }
+
+    // Reglas para Configuración (Materiales, Vidrios, etc.)
+    match /configuracion/{docId} {
+      allow read: if true; 
+      allow write: if isAdmin(); 
+    }
+
+    // Reglas para Modelos Sugeridos
+    match /aluminio_modelos/{modeloId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /pvc_modelos/{modeloId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Reglas para Usuarios (CORREGIDO de 'usuarios' a 'users' para coincidir con el código)
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}
