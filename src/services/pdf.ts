@@ -46,7 +46,7 @@ export const generateQuotePDF = (quote: SavedQuote) => {
   const finalY = (doc as any).lastAutoTable.finalY || 60;
   doc.setFontSize(14);
   doc.setTextColor(30, 41, 59);
-  doc.text(`Valor Total Neto Estimado: $${quote.totalCost.toFixed(2)}`, pageWidth - 14, finalY + 15, { align: 'right' });
+  doc.text(`Valor Total Neto Estimado: $${Math.round(quote.totalCost).toLocaleString('es-CL')}`, pageWidth - 14, finalY + 15, { align: 'right' });
 
   // 2. Technical Cut List (Pauta de Corte)
   // Usually this prints on a new page for the workshop

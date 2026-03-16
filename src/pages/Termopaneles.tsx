@@ -527,7 +527,7 @@ function CotizadorTermopanelContent() {
 
                   {/* Total Línea */}
                   <td className="p-1 border-r border-slate-100 text-right bg-slate-50/50 font-mono text-sm text-slate-800 font-medium px-2">
-                    ${calculo.totalLinea.toLocaleString()}
+                    ${calculo.totalLinea.toLocaleString('es-CL')}
                   </td>
 
                   {/* Eliminar */}
@@ -549,7 +549,7 @@ function CotizadorTermopanelContent() {
             <tr>
               <td colSpan={12} className="p-4 text-right text-slate-600 text-sm">Total Neto:</td>
               <td className="p-4 text-right text-slate-900 border-l border-slate-200 font-mono text-xl">
-                ${totalNeto.toLocaleString()}
+                ${totalNeto.toLocaleString('es-CL')}
               </td>
               <td></td>
             </tr>

@@ -3,6 +3,33 @@ import { useEditorStore } from '../store/useEditorStore';
 import type { WindowSegmentType, LineType, GlassType, ColorType } from '../types';
 import { Settings, Trash2 } from 'lucide-react';
 
+const VALID_LINES_BY_TYPE: Record<WindowSegmentType, LineType[]> = {
+  corredera: ['AL-5000', 'AL-20', 'AL-25', 'AL-25 TP', 'S-33 RPT', 'AM-35', 'AL-12 Shower Door'],
+  fijo: ['AL-32', 'AL-42', 'S-38 RPT', 'Tubular 40x80'],
+  proyectante: ['AL-32', 'AL-42', 'S-38 RPT'],
+  abatible: ['AM-35', 'AL-32', 'AL-42', 'S-38 RPT'],
+  puerta: ['AM-35', 'AL-42', 'S-38 RPT', 'AL-12 Shower Door'],
+};
+
+const getValidGlassesForLine = (line: LineType): GlassType[] => {
+  const allGlasses: GlassType[] = [
+    'Incoloro 3mm', 'Incoloro 4mm', 'Incoloro 5mm', 'Incoloro 6mm', 'Incoloro 8mm', 'Incoloro 10mm',
+    'Bronce 4mm', 'Bronce 5mm', 'Bronce 6mm', 'Espejo 4mm', 'Satén 4mm', 'Satén 5mm',
+    'Laminado 5mm', 'Laminado 6mm', 'Laminado 8mm', 'Laminado 10mm', 'Templado 10mm',
+    'Empavonado 4mm', 'Empavonado 5mm', 'Acrílico'
+  ];
+
+  if (line === 'AL-12 Shower Door') {
+    return ['Acrílico', 'Incoloro 6mm', 'Incoloro 8mm', 'Templado 10mm'];
+  }
+  
+  if (line === 'AL-25 TP' || line === 'S-33 RPT' || line === 'S-38 RPT') {
+    return ['DVH 4+9+4', ...allGlasses];
+  }
+
+  return allGlasses;
+};
+
 export const PropertiesPanel: React.FC = () => {
   const { segments, selectedId, updateSegment, removeSegment } = useEditorStore();
   
@@ -40,7 +67,15 @@ export const PropertiesPanel: React.FC = () => {
           </label>
           <select
             value={selectedSegment.type}
-            onChange={(e) => updateSegment(selectedSegment.id, { type: e.target.value as WindowSegmentType })}
+            onChange={(e) => {
+              const newType = e.target.value as WindowSegmentType;
+              const validLines = VALID_LINES_BY_TYPE[newType] || [];
+              const updates: any = { type: newType };
+              if (!validLines.includes(selectedSegment.line)) {
+                updates.line = validLines[0]; // fallback to first valid line
+              }
+              updateSegment(selectedSegment.id, updates);
+            }}
             className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm capitalize"
           >
             {['fijo', 'corredera', 'proyectante', 'abatible', 'puerta'].map(t => (
@@ -49,19 +84,34 @@ export const PropertiesPanel: React.FC = () => {
           </select>
         </div>
 
-        {selectedSegment.type === 'corredera' && (
+        {(selectedSegment.type === 'corredera' || selectedSegment.type === 'puerta' || selectedSegment.type === 'abatible') && (
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">
-              Hojas Móviles
+              {selectedSegment.type === 'corredera' ? 'Hojas Móviles' : 'Apertura'}
             </label>
             <select
-              value={selectedSegment.openingDirection || 'both'}
+              value={selectedSegment.openingDirection || (selectedSegment.type === 'corredera' ? 'both' : 'left')}
               onChange={(e) => updateSegment(selectedSegment.id, { openingDirection: e.target.value as 'left' | 'right' | 'both' })}
               className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500 transition-all text-sm mb-4"
             >
-              <option value="both">Ambas (Convencional)</option>
-              <option value="left">Móvil Izquierda</option>
-              <option value="right">Móvil Derecha</option>
+              {selectedSegment.type === 'corredera' ? (
+                <>
+                  <option value="both">Ambas (Convencional)</option>
+                  <option value="left">Móvil Izquierda</option>
+                  <option value="right">Móvil Derecha</option>
+                </>
+              ) : selectedSegment.type === 'abatible' ? (
+                <>
+                  <option value="left">Bisagras Izquierda</option>
+                  <option value="right">Bisagras Derecha</option>
+                </>
+              ) : (
+                <>
+                  <option value="left">1 Hoja (Abre a Derecha)</option>
+                  <option value="right">1 Hoja (Abre a Izquierda)</option>
+                  <option value="both">2 Hojas</option>
+                </>
+              )}
             </select>
           </div>
         )}
@@ -72,10 +122,18 @@ export const PropertiesPanel: React.FC = () => {
           </label>
           <select
             value={selectedSegment.line}
-            onChange={(e) => updateSegment(selectedSegment.id, { line: e.target.value as LineType })}
+            onChange={(e) => {
+              const newLine = e.target.value as LineType;
+              const validGlasses = getValidGlassesForLine(newLine);
+              const updates: any = { line: newLine };
+              if (!validGlasses.includes(selectedSegment.glass)) {
+                updates.glass = validGlasses[0]; // fallback
+              }
+              updateSegment(selectedSegment.id, updates);
+            }}
             className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
           >
-            {['AL-25', 'AL-5000', 'AL-20', 'AL-42', 'AL-32', 'AM-35', 'AL-12 Shower Door', 'S-38 RPT', 'S-33 RPT', 'AL-25 TP', 'Tubular 40x80'].map(l => (
+            {(VALID_LINES_BY_TYPE[selectedSegment.type] || []).map(l => (
               <option key={l} value={l}>{l}</option>
             ))}
           </select>
@@ -90,15 +148,9 @@ export const PropertiesPanel: React.FC = () => {
             onChange={(e) => updateSegment(selectedSegment.id, { glass: e.target.value as GlassType })}
             className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500 transition-all text-sm"
           >
-            {selectedSegment.line === 'AL-12 Shower Door' 
-              ? ['Acrílico', 'Incoloro 6mm', 'Incoloro 8mm'].map(g => <option key={g} value={g}>{g}</option>)
-              : [
-                  'Incoloro 3mm', 'Incoloro 4mm', 'Incoloro 5mm', 'Incoloro 6mm', 'Incoloro 8mm', 'Incoloro 10mm',
-                  'Bronce 4mm', 'Bronce 5mm', 'Bronce 6mm', 'Espejo 4mm', 'Satén 4mm', 'Satén 5mm',
-                  'Laminado 5mm', 'Laminado 6mm', 'Laminado 8mm', 'Laminado 10mm', 'Templado 10mm',
-                  'Empavonado 4mm', 'Empavonado 5mm', 'DVH 4+9+4', 'Acrílico'
-                ].map(g => <option key={g} value={g}>{g}</option>)
-            }
+            {getValidGlassesForLine(selectedSegment.line).map(g => (
+              <option key={g} value={g}>{g}</option>
+            ))}
           </select>
         </div>
 

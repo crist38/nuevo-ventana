@@ -80,9 +80,7 @@ export const QuoteSummary: React.FC = () => {
           <Calculator className="w-5 h-5 text-blue-400" />
           Presupuesto Estimado
         </h3>
-        <span className="text-2xl font-bold text-blue-400">
-          ${budget.subtotal.toFixed(2)}
-        </span>
+          ${Math.round(budget.subtotal).toLocaleString('es-CL')}
       </div>
 
       <div className="grid grid-cols-3 gap-4 text-sm">
@@ -90,7 +88,7 @@ export const QuoteSummary: React.FC = () => {
           <p className="text-slate-400 text-xs uppercase mb-1">Vidrio</p>
           <div className="flex justify-between items-end">
             <span className="text-slate-300 font-mono">{budget.totalGlassM2.toFixed(2)} m²</span>
-            <span className="text-slate-100 font-medium">${budget.glassCost.toFixed(2)}</span>
+            <span className="text-slate-100 font-medium">${Math.round(budget.glassCost).toLocaleString('es-CL')}</span>
           </div>
         </div>
         
@@ -98,7 +96,7 @@ export const QuoteSummary: React.FC = () => {
           <p className="text-slate-400 text-xs uppercase mb-1">Perfilería</p>
           <div className="flex justify-between items-end">
             <span className="text-slate-300 font-mono">{budget.totalPerimeterMl.toFixed(2)} ml</span>
-            <span className="text-slate-100 font-medium">${budget.profileCost.toFixed(2)}</span>
+            <span className="text-slate-100 font-medium">${Math.round(budget.profileCost).toLocaleString('es-CL')}</span>
           </div>
         </div>
 
@@ -106,7 +104,7 @@ export const QuoteSummary: React.FC = () => {
           <p className="text-slate-400 text-xs uppercase mb-1">Accesorios y Herrajes</p>
           <div className="flex justify-between items-end">
             <span className="text-slate-300 font-mono">{segments.length} unid.</span>
-            <span className="text-slate-100 font-medium">${budget.totalAccessoriesCost.toFixed(2)}</span>
+            <span className="text-slate-100 font-medium">${Math.round(budget.totalAccessoriesCost).toLocaleString('es-CL')}</span>
           </div>
         </div>
       </div>

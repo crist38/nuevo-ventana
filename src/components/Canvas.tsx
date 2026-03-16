@@ -7,7 +7,7 @@ const SNAP_GRID = 50; // Snap to nearest 50mm increments
 
 const COLOR_MAPPING: Record<string, string> = {
   Blanco: '#f8fafc',
-  Negro: '#0f172a',
+  Negro: '#1e293b', // Lighter than #0f172a to distinguish from bg
   Mate: '#94a3b8',
   Titanio: '#525252',
   Nogal: '#451a03',
@@ -90,6 +90,21 @@ export const Canvas: React.FC = () => {
     const cx = segment.x * SCALE;
     const cy = segment.y * SCALE;
 
+    // Configuración estética del material
+    const baseColor = COLOR_MAPPING[segment.color] || "#f8fafc";
+    const glassColor = "#bae6fd"; // Light blue termopanel tint
+    const strokeColor = "#64748b";
+    
+    // Dimensiones de perfilería
+    const marcoT = 10;
+    const hojaT = 10;
+    const innerW = cw - marcoT * 2;
+    const innerH = ch - marcoT * 2;
+    
+    // Para hojas correderas
+    const overlap = 6;
+    const hojaW = innerW / 2 + overlap / 2;
+
     return (
       <g 
         key={segment.id} 
@@ -101,42 +116,193 @@ export const Canvas: React.FC = () => {
         }}
         className={`${draggingId === segment.id ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
+        {/* Sombra de la ventana contra el fondo */}
+        <rect width={cw} height={ch} fill="rgba(0,0,0,0.3)" x={3} y={6} rx={2} />
+
+        {/* --- MARCO EXTERIOR --- */}
         <rect
           width={cw}
           height={ch}
-          fill={COLOR_MAPPING[segment.color] || "#cbd5e1"}
-          stroke={isSelected ? "#3b82f6" : "#0f172a"}
-          strokeWidth={isSelected ? 4 : 1}
+          fill={baseColor}
+          stroke={isSelected ? "#3b82f6" : strokeColor}
+          strokeWidth={isSelected ? 3 : 1}
         />
-        
-        {/* If it is a double panel like sliding or door, draw a divider */}
-        {(segment.type === 'corredera' || segment.type === 'puerta') ? (
-          <>
-            {/* Left Glass */}
-            <rect x={8} y={8} width={(cw / 2) - 12} height={ch - 16} fill="rgba(148, 163, 184, 0.3)" stroke="#0f172a" strokeWidth={1} />
-            {/* Right Glass */}
-            <rect x={(cw / 2) + 4} y={8} width={(cw / 2) - 12} height={ch - 16} fill="rgba(148, 163, 184, 0.3)" stroke="#0f172a" strokeWidth={1} />
-            {/* Sliding Arrow (Left to right or Right to left) if sliding */}
+        {/* Bisel de iluminación del marco */}
+        <rect x={1} y={1} width={cw-2} height={ch-2} fill="none" stroke="rgba(255,255,255,0.4)" pointerEvents="none" />
+
+        {/* --- HOJAS INTERIORES --- */}
+        {segment.type === 'corredera' ? (
+          <g transform={`translate(${marcoT}, ${marcoT})`}>
+            {/* Fondo del riel */}
+            <rect width={innerW} height={innerH} fill="#0f172a" opacity={0.5} />
+
+            {/* Hoja Izquierda */}
+            <g transform={`translate(0, 0)`}>
+              <rect width={hojaW} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+              <rect x={1} y={1} width={hojaW-2} height={innerH-2} fill="none" stroke="rgba(255,255,255,0.4)" />
+              <rect x={hojaT} y={hojaT} width={hojaW - hojaT*2} height={innerH - hojaT*2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+            </g>
+
+            {/* Hoja Derecha */}
+            <g transform={`translate(${innerW / 2 - overlap / 2}, 0)`}>
+              <rect width={hojaW} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+              <rect x={1} y={1} width={hojaW-2} height={innerH-2} fill="none" stroke="rgba(255,255,255,0.4)" />
+              <rect x={hojaT} y={hojaT} width={hojaW - hojaT*2} height={innerH - hojaT*2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+            </g>
+
+            {/* Flechas indicadoras de corredera */}
             {segment.type === 'corredera' && (
-              <g className="opacity-50" stroke="#0f172a" strokeWidth="1.5" fill="none">
+              <g className="opacity-80" stroke="#f1f5f9" strokeWidth="1.5" fill="none">
                 {(!segment.openingDirection || segment.openingDirection === 'both' || segment.openingDirection === 'left') && (
                   <>
-                    <path d={`M ${cw / 4 - 10} ${ch / 2} L ${cw / 4 + 10} ${ch / 2} M ${cw / 4 + 5} ${ch / 2 - 4} L ${cw / 4 + 10} ${ch / 2} L ${cw / 4 + 5} ${ch / 2 + 4}`} />
-                    {/* Small handles */}
-                    <rect x={12} y={ch / 2 - 15} width={4} height={30} fill="#64748b" rx={1} stroke="none" />
+                    <path d={`M ${hojaW / 2 - 8} ${innerH / 2} L ${hojaW / 2 + 8} ${innerH / 2} M ${hojaW / 2 + 3} ${innerH / 2 - 4} L ${hojaW / 2 + 8} ${innerH / 2} L ${hojaW / 2 + 3} ${innerH / 2 + 4}`} />
+                    <rect x={hojaT + 4} y={innerH / 2 - 15} width={4} height={30} fill={strokeColor} rx={1} stroke="none" />
                   </>
                 )}
                 {(!segment.openingDirection || segment.openingDirection === 'both' || segment.openingDirection === 'right') && (
                   <>
-                    <path d={`M ${cw * 0.75 + 10} ${ch / 2} L ${cw * 0.75 - 10} ${ch / 2} M ${cw * 0.75 - 5} ${ch / 2 - 4} L ${cw * 0.75 - 10} ${ch / 2} L ${cw * 0.75 - 5} ${ch / 2 + 4}`} />
-                    <rect x={cw - 16} y={ch / 2 - 15} width={4} height={30} fill="#64748b" rx={1} stroke="none" />
+                    <path d={`M ${innerW - hojaW / 2 + 8} ${innerH / 2} L ${innerW - hojaW / 2 - 8} ${innerH / 2} M ${innerW - hojaW / 2 - 3} ${innerH / 2 - 4} L ${innerW - hojaW / 2 - 8} ${innerH / 2} L ${innerW - hojaW / 2 - 3} ${innerH / 2 + 4}`} />
+                    <rect x={innerW - hojaT - 8} y={innerH / 2 - 15} width={4} height={30} fill={strokeColor} rx={1} stroke="none" />
                   </>
                 )}
               </g>
             )}
-          </>
+          </g>
+        ) : segment.type === 'puerta' ? (
+          <g transform={`translate(${marcoT}, ${marcoT})`}>
+            {segment.openingDirection === 'both' ? (
+              // Puerta 2 Hojas
+              <>
+                {/* Hoja Izquierda */}
+                <g>
+                  <rect width={innerW / 2} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                  <rect x={1} y={1} width={innerW / 2 - 2} height={innerH - 2} fill="none" stroke="rgba(255,255,255,0.4)" />
+                  {segment.accessories?.zocalo ? (
+                    <>
+                      <rect x={hojaT} y={hojaT} width={innerW / 2 - hojaT * 2} height={innerH / 2 - hojaT} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                      <rect x={hojaT} y={innerH / 2} width={innerW / 2 - hojaT * 2} height={innerH / 2 - hojaT} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                      {/* Divisor central */}
+                      <rect x={hojaT} y={innerH / 2 - 5} width={innerW / 2 - hojaT * 2} height={10} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                    </>
+                  ) : (
+                    <rect x={hojaT} y={hojaT} width={innerW / 2 - hojaT * 2} height={innerH - hojaT * 2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                  )}
+                  {/* Líneas rojas apertura (bisagras a la izquierda) */}
+                  <path d={`M ${hojaT} ${hojaT} L ${innerW / 2 - hojaT} ${innerH / 2} L ${hojaT} ${innerH - hojaT}`} fill="none" stroke="#ef4444" strokeWidth={1} />
+                  {/* Manilla derecha */}
+                  <rect x={innerW / 2 - hojaT - 4} y={innerH / 2 - 15} width={6} height={30} fill="#eab308" stroke="#a16207" strokeWidth={1} rx={2} />
+                </g>
+                
+                {/* Hoja Derecha */}
+                <g transform={`translate(${innerW / 2}, 0)`}>
+                  <rect width={innerW / 2} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                  <rect x={1} y={1} width={innerW / 2 - 2} height={innerH - 2} fill="none" stroke="rgba(255,255,255,0.4)" />
+                  {segment.accessories?.zocalo ? (
+                    <>
+                      <rect x={hojaT} y={hojaT} width={innerW / 2 - hojaT * 2} height={innerH / 2 - hojaT} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                      <rect x={hojaT} y={innerH / 2} width={innerW / 2 - hojaT * 2} height={innerH / 2 - hojaT} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                      <rect x={hojaT} y={innerH / 2 - 5} width={innerW / 2 - hojaT * 2} height={10} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                    </>
+                  ) : (
+                    <rect x={hojaT} y={hojaT} width={innerW / 2 - hojaT * 2} height={innerH - hojaT * 2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                  )}
+                  {/* Líneas rojas apertura (bisagras a la derecha) */}
+                  <path d={`M ${innerW / 2 - hojaT} ${hojaT} L ${hojaT} ${innerH / 2} L ${innerW / 2 - hojaT} ${innerH - hojaT}`} fill="none" stroke="#ef4444" strokeWidth={1} />
+                  {/* Manilla izquierda */}
+                  <rect x={hojaT - 2} y={innerH / 2 - 15} width={6} height={30} fill="#eab308" stroke="#a16207" strokeWidth={1} rx={2} />
+                </g>
+              </>
+            ) : (
+              // Puerta 1 Hoja
+              <>
+                <rect width={innerW} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                <rect x={1} y={1} width={innerW - 2} height={innerH - 2} fill="none" stroke="rgba(255,255,255,0.4)" />
+                {segment.accessories?.zocalo ? (
+                  <>
+                    <rect x={hojaT} y={hojaT} width={innerW - hojaT * 2} height={innerH / 2 - hojaT} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                    <rect x={hojaT} y={innerH / 2} width={innerW - hojaT * 2} height={innerH / 2 - hojaT} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                    {/* Divisor central */}
+                    <rect x={hojaT} y={innerH / 2 - 5} width={innerW - hojaT * 2} height={10} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+                  </>
+                ) : (
+                  <rect x={hojaT} y={hojaT} width={innerW - hojaT * 2} height={innerH - hojaT * 2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+                )}
+
+                {segment.openingDirection === 'right' ? (
+                  <>
+                    {/* Bisagras derecha, abre desde izquierda. Triángulo apunta a manilla en izquierda */}
+                    <path d={`M ${innerW - hojaT} ${hojaT} L ${hojaT} ${innerH / 2} L ${innerW - hojaT} ${innerH - hojaT}`} fill="none" stroke="#ef4444" strokeWidth={1} />
+                    <rect x={hojaT - 2} y={innerH / 2 - 15} width={6} height={30} fill="#eab308" stroke="#a16207" strokeWidth={1} rx={2} />
+                  </>
+                ) : (
+                  <>
+                    {/* Bisagras izquierda, abre desde derecha. Triángulo apunta a manilla en derecha */}
+                    <path d={`M ${hojaT} ${hojaT} L ${innerW - hojaT} ${innerH / 2} L ${hojaT} ${innerH - hojaT}`} fill="none" stroke="#ef4444" strokeWidth={1} />
+                    <rect x={innerW - hojaT - 4} y={innerH / 2 - 15} width={6} height={30} fill="#eab308" stroke="#a16207" strokeWidth={1} rx={2} />
+                  </>
+                )}
+              </>
+            )}
+          </g>
         ) : (
-          <rect x={8} y={8} width={cw - 16} height={ch - 16} fill="rgba(148, 163, 184, 0.3)" stroke="#0f172a" strokeWidth={1} />
+          <g transform={`translate(${marcoT}, ${marcoT})`}>
+            {/* Hoja estática para fijo, proyectante, abatible */}
+            <rect width={innerW} height={innerH} fill={baseColor} stroke={strokeColor} strokeWidth={1} />
+            <rect x={1} y={1} width={innerW-2} height={innerH-2} fill="none" stroke="rgba(255,255,255,0.4)" />
+            {/* Cristal */}
+            <rect x={hojaT} y={hojaT} width={innerW - hojaT*2} height={innerH - hojaT*2} fill={glassColor} fillOpacity={0.4} stroke={strokeColor} strokeWidth={1} />
+            
+            {/* Indicadores de apertura para proyectante */}
+            {segment.type === 'proyectante' && (
+              <>
+                <path 
+                  d={`M ${hojaT} ${hojaT} L ${innerW / 2} ${innerH - hojaT} L ${innerW - hojaT} ${hojaT}`} 
+                  fill="none" 
+                  stroke="#2563eb" 
+                  strokeWidth={1} 
+                />
+                {/* Manilla */}
+                <rect 
+                  x={innerW / 2 - 10} 
+                  y={innerH - hojaT - 4} 
+                  width={20} 
+                  height={8} 
+                  fill="#475569" 
+                  stroke="#0f172a" 
+                  strokeWidth={1} 
+                  rx={1.5} 
+                />
+              </>
+            )}
+
+            {/* Indicadores de apertura para abatible */}
+            {segment.type === 'abatible' && (
+              <>
+                <path 
+                  d={
+                    segment.openingDirection === 'right' 
+                      ? `M ${innerW - hojaT} ${hojaT} L ${hojaT} ${innerH / 2} L ${innerW - hojaT} ${innerH - hojaT}` 
+                      : `M ${hojaT} ${hojaT} L ${innerW - hojaT} ${innerH / 2} L ${hojaT} ${innerH - hojaT}`
+                  }
+                  fill="none" 
+                  stroke="#2563eb" 
+                  strokeWidth={1} 
+                  strokeDasharray="4 4"
+                />
+                {/* Manilla */}
+                <rect 
+                  x={segment.openingDirection === 'right' ? hojaT - 2 : innerW - hojaT - 4} 
+                  y={innerH / 2 - 10} 
+                  width={6} 
+                  height={20} 
+                  fill="#475569" 
+                  stroke="#0f172a" 
+                  strokeWidth={1} 
+                  rx={1.5} 
+                />
+              </>
+            )}
+          </g>
         )}
         
         <text 
@@ -145,7 +311,7 @@ export const Canvas: React.FC = () => {
           fill={isSelected ? "#3b82f6" : (['Blanco', 'Mate'].includes(segment.color) ? '#0f172a' : '#f8fafc')} 
           textAnchor="middle" 
           dominantBaseline="middle"
-          style={{ fontSize: '10px', fontFamily: 'monospace', pointerEvents: 'none', fontWeight: 600 }}
+          style={{ fontSize: '10px', fontFamily: 'monospace', pointerEvents: 'none', fontWeight: 600, textShadow: '0 1px 2px rgba(255,255,255,0.3)' }}
         >
           {segment.type.toUpperCase()}
         </text>

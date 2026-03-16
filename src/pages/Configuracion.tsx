@@ -261,7 +261,7 @@ function CollectionEditor({ label, data, colKey, onAdd, onEdit, onDelete }: any)
 
                         <div className="flex items-center gap-4">
                             <div className="font-medium text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full">
-                                ${v.price.toLocaleString()}
+                                ${v.price.toLocaleString('es-CL')}
                             </div>
 
                             <div className="flex gap-2">
