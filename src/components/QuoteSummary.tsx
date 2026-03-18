@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useEditorStore } from '../store/useEditorStore';
-import { Calculator, Save, Loader2 } from 'lucide-react';
+import { Calculator, Save, Loader2, FileDown } from 'lucide-react';
 import { saveQuote } from '../services/db';
+import { exportQuotePDF } from '../utils/exportQuotePDF';
 
 export const QuoteSummary: React.FC = () => {
   const { segments, settings } = useEditorStore();
   const [clientName, setClientName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const calculateBudget = () => {
     let totalGlassM2 = 0;
@@ -73,6 +75,15 @@ export const QuoteSummary: React.FC = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      await exportQuotePDF(segments, clientName, budget.subtotal);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="bg-slate-900 border-t border-slate-700 p-4 shrink-0">
       <div className="flex items-center justify-between mb-4">
@@ -80,33 +91,7 @@ export const QuoteSummary: React.FC = () => {
           <Calculator className="w-5 h-5 text-blue-400" />
           Presupuesto Estimado
         </h3>
-          ${Math.round(budget.subtotal).toLocaleString('es-CL')}
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 text-sm">
-        <div className="bg-slate-800 p-3 rounded-md border border-slate-700/50">
-          <p className="text-slate-400 text-xs uppercase mb-1">Vidrio</p>
-          <div className="flex justify-between items-end">
-            <span className="text-slate-300 font-mono">{budget.totalGlassM2.toFixed(2)} m²</span>
-            <span className="text-slate-100 font-medium">${Math.round(budget.glassCost).toLocaleString('es-CL')}</span>
-          </div>
-        </div>
-        
-        <div className="bg-slate-800 p-3 rounded-md border border-slate-700/50">
-          <p className="text-slate-400 text-xs uppercase mb-1">Perfilería</p>
-          <div className="flex justify-between items-end">
-            <span className="text-slate-300 font-mono">{budget.totalPerimeterMl.toFixed(2)} ml</span>
-            <span className="text-slate-100 font-medium">${Math.round(budget.profileCost).toLocaleString('es-CL')}</span>
-          </div>
-        </div>
-
-        <div className="bg-slate-800 p-3 rounded-md border border-slate-700/50">
-          <p className="text-slate-400 text-xs uppercase mb-1">Accesorios y Herrajes</p>
-          <div className="flex justify-between items-end">
-            <span className="text-slate-300 font-mono">{segments.length} unid.</span>
-            <span className="text-slate-100 font-medium">${Math.round(budget.totalAccessoriesCost).toLocaleString('es-CL')}</span>
-          </div>
-        </div>
+        <span className="text-2xl font-bold text-white">${Math.round(budget.subtotal).toLocaleString('es-CL')}</span>
       </div>
 
       <div className="mt-4 pt-4 border-t border-slate-800 space-y-3">
@@ -124,6 +109,14 @@ export const QuoteSummary: React.FC = () => {
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Guardar Presupuesto
+        </button>
+        <button
+          onClick={handleExportPDF}
+          disabled={segments.length === 0 || isExporting}
+          className="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-md transition-colors font-medium text-sm"
+        >
+          {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+          Imprimir PDF
         </button>
       </div>
     </div>

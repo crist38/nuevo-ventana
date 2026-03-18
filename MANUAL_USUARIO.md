@@ -89,10 +89,10 @@ Las fórmulas están basadas en los catálogos técnicos de cada línea. Siempre
 
 ### 5.1 Líneas Disponibles (linea)
 El sistema soporta las siguientes líneas arquitectónicas de aluminio y estructuras:
-- **Línea AL 5000** (Alta gama corredera)
+- **Línea AL 5000** (Corredera estándar)
 - **Línea AL 20** (Corredera estándar liviana)
-- **Línea AL 25** (Corredera estándar)
-- **Línea AL 25 TP** (Corredera para termopanel)
+- **Línea AL 25** (Alta gama corredera)
+- **Línea AL 25 TP** (Corredera Alta gama para termopanel)
 - **Línea S-33 RPT** (Corredera con rotura de puente térmico)
 - **Línea AL 32** (Fijos y proyectantes livianos)
 - **Línea AL 42** (Fijos y proyectantes)

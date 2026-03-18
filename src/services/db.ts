@@ -1,15 +1,20 @@
 import { collection, addDoc, getDocs, doc, deleteDoc, orderBy, query } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import type { SavedQuote, WindowSegment } from '../types';
 
-const QUOTES_COLLECTION = 'quotes';
+const QUOTES_COLLECTION = 'presupuestos';
 
 export const saveQuote = async (clientName: string, segments: WindowSegment[], totalCost: number): Promise<string> => {
-  const quoteData: Omit<SavedQuote, 'id'> = {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Usuario no autenticado');
+
+  const quoteData = {
     clientName,
     date: new Date().toISOString(),
     segments,
-    totalCost
+    totalCost,
+    userId: user.uid,
+    userEmail: user.email
   };
   
   const docRef = await addDoc(collection(db, QUOTES_COLLECTION), quoteData);
@@ -17,13 +22,28 @@ export const saveQuote = async (clientName: string, segments: WindowSegment[], t
 };
 
 export const getQuotes = async (): Promise<SavedQuote[]> => {
-  const q = query(collection(db, QUOTES_COLLECTION), orderBy('date', 'desc'));
-  const snapshot = await getDocs(q);
-  
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as SavedQuote[];
+  try {
+    // Try with orderBy first
+    const q = query(
+      collection(db, QUOTES_COLLECTION),
+      orderBy('date', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as SavedQuote[];
+  } catch (e) {
+    console.warn('Query with orderBy failed, trying without:', e);
+    // Fallback: fetch without orderBy (in case index is missing)
+    const snapshot = await getDocs(collection(db, QUOTES_COLLECTION));
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as SavedQuote[];
+  }
 };
 
 export const deleteQuote = async (id: string): Promise<void> => {

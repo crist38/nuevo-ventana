@@ -1,15 +1,19 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Box, Layers, LayoutDashboard, Settings, Maximize } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Box, Layers, LayoutDashboard, Settings, Home, LogOut } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../services/firebase';
 
 export const Navigation: React.FC = () => {
   const location = useLocation();
 
+  const navigate = useNavigate();
+
   const links = [
-    { to: '/', label: 'Cotizador Aluminio', icon: Box },
+    { to: '/', label: 'Inicio', icon: Home },
+    { to: '/aluminio', label: 'Cotizador Aluminio', icon: Box },
     { to: '/cotizador-termopaneles', label: 'Termopaneles', icon: Layers },
     { to: '/presupuestos', label: 'Presupuestos', icon: LayoutDashboard },
-    { to: '/admin/optimizer', label: 'Optimizador', icon: Maximize },
     { to: '/admin', label: 'Administración', icon: Settings },
   ];
 
@@ -41,6 +45,14 @@ export const Navigation: React.FC = () => {
             </Link>
           );
         })}
+        <button
+          onClick={() => { signOut(auth); navigate('/'); }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-slate-800/50 border border-transparent transition-colors ml-2"
+          title="Cerrar sesión"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="hidden md:inline">Salir</span>
+        </button>
       </div>
     </nav>
   );
