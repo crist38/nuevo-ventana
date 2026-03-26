@@ -28,4 +28,3 @@ dist-ssr
 
 # Firebase configuration
 firestore.indexes.json
-src/services/firebase.ts
