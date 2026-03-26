@@ -3,6 +3,7 @@ import { Canvas } from '../components/Canvas';
 import { Toolbar } from '../components/Toolbar';
 import { PropertiesPanel } from '../components/PropertiesPanel';
 import { QuoteSummary } from '../components/QuoteSummary';
+import { TabBar } from '../components/TabBar';
 import { LayoutTemplate, List } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -35,6 +36,7 @@ export const Editor: React.FC = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Left/Center Editor Area */}
         <div className="flex flex-col flex-1 border-r border-slate-800">
+          <TabBar />
           <Toolbar />
           <Canvas />
         </div>

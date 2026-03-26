@@ -1,0 +1,40 @@
+48
+4209
+Marco Fijo
+0.417 kg/m
+4202
+Hoja
+0.668 kg/m
+4231
+Marco con Cámara
+0.798 kg/m
+4206
+Junquillo TP
+0.229 kg/m
+4229
+Junquillo
+0.160 kg/m
+4204
+Palillo
+0.818 kg/m
+49
+FIJOS Y PROYECTANTES
+Serie 42
+4212
+Cuña de Armado
+0.237 kg/m
+4213
+Escuadra de Armado
+0.972 kg/m
+PERFILES PERFILES
+QUINCALLERÍA
+PESO TEÓRICO
+PESO TEÓRICO
+PAUTA PARA
+PROYECTANTE CON CÁMARA
+PAUTA PARA
+PROYECTANTE SIN CÁMARA
+VIDRIO
+VIDRIO
+Unión Palillo AL-42
+

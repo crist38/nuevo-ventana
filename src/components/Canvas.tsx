@@ -15,7 +15,8 @@ const COLOR_MAPPING: Record<string, string> = {
 };
 
 export const Canvas: React.FC = () => {
-  const { segments, selectedId, selectSegment, updateSegment } = useEditorStore();
+  const { segments, activeSheetId, selectedId, selectSegment, updateSegment } = useEditorStore();
+  const activeSegments = segments.filter(s => s.sheetId === activeSheetId);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -346,7 +347,7 @@ export const Canvas: React.FC = () => {
         <rect width="100%" height="100%" fill="url(#grid-pattern)" id="grid-pattern" />
 
         <g transform={`translate(${pan.x + window.innerWidth / 3}, ${pan.y + window.innerHeight / 4})`}>
-          {segments.map(renderSegment)}
+          {activeSegments.map(renderSegment)}
         </g>
       </svg>
       

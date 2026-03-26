@@ -1,0 +1,48 @@
+34
+2001
+Riel Superior
+0.518 kg/m
+2004
+Cabezal
+0.346 kg/m
+2005
+Zócalo
+0.400 kg/m
+2002
+Riel Inferior
+0.455 kg/m
+2009
+Jamba
+0.415 kg/m
+2003
+Jamba
+0.416 kg/m
+2010
+Pierna
+0.435 kg/m
+2006
+Pierna Abierta
+0.481 kg/m
+2019
+Traslapo
+0.403 kg/m
+35
+VENTANA CORREDERA
+Serie 20
+2018
+Zócalo / Cabezal TP
+0.419 kg/m
+2020
+Pierna Abierta TP
+0.401 kg/m
+2016
+Traslapo TP
+0.340 kg/m
+ALTURA MÁXIMA RECOMENDADA
+Norma NCH-523 Clasificación 10 V
+PERFILES
+QUINCALLERÍA
+PESO TEÓRICO
+PAUTA PARA
+DOS HOJAS CORREDERAS
+VIDRIO

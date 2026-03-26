@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { useEditorStore } from '../store/useEditorStore';
 import { Calculator, Save, Loader2, FileDown } from 'lucide-react';
 import { saveQuote } from '../services/db';
+import { toPng } from 'html-to-image';
 import { exportQuotePDF } from '../utils/exportQuotePDF';
+import { exportWorkOrder } from '../utils/exportWorkOrder';
+import { WorkOrderModal } from './WorkOrderModal';
+import { Scissors } from 'lucide-react';
 
 export const QuoteSummary: React.FC = () => {
-  const { segments, settings } = useEditorStore();
+  const { segments, settings, sheets, activeSheetId, setActiveSheet } = useEditorStore();
   const [clientName, setClientName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isWorkOrderOpen, setIsWorkOrderOpen] = useState(false);
 
   const calculateBudget = () => {
     let totalGlassM2 = 0;
@@ -78,7 +83,48 @@ export const QuoteSummary: React.FC = () => {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      await exportQuotePDF(segments, clientName, budget.subtotal);
+      const sheetImages: { name: string, dataUrl: string, width: number, height: number }[] = [];
+      const svgElement = document.querySelector('svg.w-full.h-full') as HTMLElement;
+      
+      if (svgElement) {
+        const originalSheetId = activeSheetId;
+        
+        for (const sheet of sheets) {
+          // Ensure there are windows in this sheet before capturing, unless it's the only sheet.
+          const hasSegments = segments.some(seg => (seg.sheetId === sheet.id) || (!seg.sheetId && sheet.id === 'default-sheet'));
+          if (!hasSegments && sheets.length > 1) continue;
+
+          setActiveSheet(sheet.id);
+          // Wait for React to re-render the canvas
+          await new Promise(resolve => setTimeout(resolve, 150));
+          
+          try {
+            const dataUrl = await toPng(svgElement, {
+              backgroundColor: '#ffffff',
+              pixelRatio: 2,
+              width: svgElement.clientWidth,
+              height: svgElement.clientHeight,
+            });
+            sheetImages.push({ 
+              name: sheet.name, 
+              dataUrl, 
+              width: svgElement.clientWidth, 
+              height: svgElement.clientHeight 
+            });
+          } catch (err) {
+            console.warn('Failed to capture sheet', sheet.name, err);
+          }
+        }
+        
+        setActiveSheet(originalSheetId);
+        // Wait a small amount to allow UI to restore
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      await exportQuotePDF(segments, sheets, sheetImages, clientName, budget.subtotal);
+    } catch (error) {
+      console.error(error);
+      alert('Error al generar el PDF.');
     } finally {
       setIsExporting(false);
     }
@@ -116,9 +162,27 @@ export const QuoteSummary: React.FC = () => {
           className="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-md transition-colors font-medium text-sm"
         >
           {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-          Imprimir PDF
+          Imprimir Presupuesto PDF
+        </button>
+        <button
+          onClick={() => setIsWorkOrderOpen(true)}
+          disabled={segments.length === 0}
+          className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-md transition-colors font-medium text-sm"
+        >
+          <Scissors className="w-4 h-4" />
+          Generar Pauta de Corte
         </button>
       </div>
+
+      <WorkOrderModal 
+        isOpen={isWorkOrderOpen}
+        onClose={() => setIsWorkOrderOpen(false)}
+        segments={segments}
+        sheets={sheets}
+        onPrint={() => {
+          exportWorkOrder(segments, sheets, clientName || 'Sin Nombre');
+        }}
+      />
     </div>
   );
 };

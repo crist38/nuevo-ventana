@@ -70,7 +70,7 @@ export interface PautaCorte {
     height: number;
 }
 
-export function getPautaAL25_Corredera2H(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaAL25_Corredera2H(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     return {
         perfiles: [
             { codigo: '2501', nombre: 'Riel Superior', cantidad: 1, largo: X - 16, formula: 'X - 16' },
@@ -111,7 +111,7 @@ export const PERFILES_AL_5000: Record<string, PerfilAluminio> = {
     '5007': { codigo: '5007', nombre: 'Traslapo', peso: 0.6 },
 };
 
-export function getPautaAL5000_Corredera2H(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaAL5000_Corredera2H(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Observación de Imagen de Usuario (inferidas o estándar si están bloqueadas)
     // Rieles: X 
     // Jambas: Y - 3 (Asumiendo "Y - 3" de la observación)
@@ -159,7 +159,7 @@ export const PERFILES_AL_20: Record<string, PerfilAluminio> = {
     '2019': { codigo: '2019', nombre: 'Traslapo', peso: 0.403 },
 };
 
-export function getPautaAL20_Corredera2H(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaAL20_Corredera2H(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Ficha Técnica Serie 20
     return {
         perfiles: [
@@ -222,7 +222,7 @@ export const PERFILES_S_33_RPT: Record<string, PerfilAluminio> = {
 };
 
 
-export function getPautaAL42_Proyectante(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaAL42_Proyectante(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Ficha Técnica "Pauta para Proyectante con Cámara"
     // Marco Superior: 4201 @ X
     // Marco Inferior: 4231 @ X + 40
@@ -260,7 +260,7 @@ export function getPautaAL42_Proyectante(X: number, Y: number, pesos?: Record<st
     };
 }
 
-export function getPautaAL12_Shower2H(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaAL12_Shower2H(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     return {
         perfiles: [
             { codigo: '1203', nombre: 'Riel Superior', cantidad: 1, largo: X - 5, formula: 'X - 5' },
@@ -289,7 +289,7 @@ export function getPautaAL12_Shower2H(X: number, Y: number, pesos?: Record<strin
     };
 }
 
-export function getPautaS38RPT_Proyectante(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaS38RPT_Proyectante(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Ficha Técnica "Serie S-38 RPT - Pauta para Proyectante"
     return {
         perfiles: [
@@ -320,7 +320,7 @@ export function getPautaS38RPT_Proyectante(X: number, Y: number, pesos?: Record<
     };
 }
 
-export function getPautaS38RPT_Fijo(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaS38RPT_Fijo(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Ficha Técnica "Serie S-38 RPT - Pauta para Fijo"
     return {
         perfiles: [
@@ -347,7 +347,7 @@ export function getPautaS38RPT_Fijo(X: number, Y: number, pesos?: Record<string,
     };
 }
 
-export function getPautaS33RPT_Corredera2H(X: number, Y: number, pesos?: Record<string, number>): PautaCorte {
+export function getPautaS33RPT_Corredera2H(X: number, Y: number, _pesos?: Record<string, number>): PautaCorte {
     // Fórmulas basadas en Ficha Técnica "Serie S-33 RPT - Pauta para dos Hojas Correderas"
     return {
         perfiles: [

@@ -1,6 +1,5 @@
 import jsPDF from 'jspdf';
-import { toPng } from 'html-to-image';
-import type { WindowSegment } from '../types';
+import type { WindowSegment, Sheet } from '../types';
 
 const TYPE_NAMES: Record<string, string> = {
   fijo: 'Fijo',
@@ -10,8 +9,17 @@ const TYPE_NAMES: Record<string, string> = {
   puerta: 'Puerta',
 };
 
+export interface SheetImage {
+  name: string;
+  dataUrl: string;
+  width: number;
+  height: number;
+}
+
 export const exportQuotePDF = async (
   segments: WindowSegment[],
+  sheets: Sheet[],
+  sheetImages: SheetImage[],
   clientName: string,
   totalCost: number
 ) => {
@@ -40,26 +48,25 @@ export const exportQuotePDF = async (
 
     let currentY = 48;
 
-    // ── Canvas Image ──
-    const svgElement = document.querySelector('svg.w-full.h-full');
-    if (svgElement) {
-      try {
-        const dataUrl = await toPng(svgElement as HTMLElement, {
-          backgroundColor: '#ffffff',
-          pixelRatio: 2,
-          width: (svgElement as SVGSVGElement).clientWidth,
-          height: (svgElement as SVGSVGElement).clientHeight,
-        });
-
-        const imgWidthMM = contentWidth;
-        const aspectRatio = (svgElement as SVGSVGElement).clientHeight / (svgElement as SVGSVGElement).clientWidth;
-        const imgHeightMM = Math.min(imgWidthMM * aspectRatio, 80);
-
-        pdf.addImage(dataUrl, 'PNG', margin, currentY, imgWidthMM, imgHeightMM);
-        currentY += imgHeightMM + 8;
-      } catch (imgErr) {
-        console.warn('No se pudo capturar la vista previa del canvas:', imgErr);
+    // ── Canvas Images ──
+    for (const img of sheetImages) {
+      if (currentY > pageHeight - 60) {
+        pdf.addPage();
+        currentY = 20;
       }
+
+      pdf.setTextColor(71, 85, 105);
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Vista: ${img.name}`, margin, currentY);
+      currentY += 4;
+
+      const imgWidthMM = contentWidth;
+      const aspectRatio = img.height / img.width;
+      const imgHeightMM = Math.min(imgWidthMM * aspectRatio, 80);
+
+      pdf.addImage(img.dataUrl, 'PNG', margin, currentY, imgWidthMM, imgHeightMM);
+      currentY += imgHeightMM + 10;
     }
 
     // ── Segment Details Table ──
@@ -106,7 +113,8 @@ export const exportQuotePDF = async (
         pdf.rect(margin, currentY - 4, contentWidth, 6, 'F');
       }
 
-      const typeName = TYPE_NAMES[seg.type] || seg.type;
+      const sheetName = sheets?.find(s => s.id === seg.sheetId)?.name || 'General';
+      const typeName = `${TYPE_NAMES[seg.type] || seg.type} (${sheetName})`;
       const dims = `${seg.width} x ${seg.height} mm`;
 
       // Optional accessories

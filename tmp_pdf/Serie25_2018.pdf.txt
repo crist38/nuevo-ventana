@@ -1,0 +1,93 @@
+36
+2501
+Riel Superior
+0.733 kg/m
+2504
+Cabezal
+0.486 kg/m
+2505
+Zócalo
+0.707 kg/m
+2502
+Riel Inferior
+0.696 kg/m
+2548
+Mono Riel Inferior
+0.597 kg/m
+2514
+Riel Inferior
+Zona Lluviosa
+0.923 kg/m
+PERFILES
+QUINCALLERÍA
+PESO TEÓRICO
+PAUTA PARA
+DOS HOJAS CORREDERAS
+VIDRIO
+37
+VENTANAL CORREDERA
+Serie 25
+2549
+Pierna Hoja Fija
+0.389 kg/m
+2511R
+Traslapo Reforzado
+0.767 kg/m
+2512R
+Pierna Reforzada
+0.809 kg/m
+2503
+Jamba
+0.560 kg/m
+2506
+Pierna
+0.602 kg/m
+2509
+Jamba E
+0.557 kg/m
+2510
+Pierna
+0.560 kg/m
+2507
+Traslapo
+0.562 kg/m
+38
+2516
+Zócalo TP
+0.638 kg/m
+2545
+Adaptador para
+Cristal Simple
+0.158 kg/m
+Reforzada
+Normal
+ALTURA MÁXIMA RECOMENDADA
+Norma NCH-523 Clasificación 10 V
+Carro Mendavia Doble
+Regulable Agujas
+8015
+Adaptador TP
+0.277 kg/m
+Manilla Vita con
+mecanismo unipunto
+39
+VENTANAL CORREDERA
+Serie 25
+2530R
+Traslapo Reforzado TP
+0.729 kg/m
+2519
+Traslapo TP
+0.517 kg/m
+2529R
+Pierna Reforzada TP
+0.809 kg/m
+2550
+Pierna Hoja Fija TP
+0.378 kg/m
+2547
+Traslapo TP SR
+1.033 kg/m
+2517
+Pierna Abierta TP
+0.578 kg/m

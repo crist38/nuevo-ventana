@@ -1,10 +1,16 @@
 export type WindowSegmentType = "puerta" | "corredera" | "fijo" | "proyectante" | "abatible";
-export type LineType = "AL-25" | "AL-5000" | "AL-20" | "AL-42" | "AL-32" | "AM-35" | "AL-12 Shower Door" | "S-38 RPT" | "S-33 RPT" | "AL-25 TP" | "Tubular 40x80";
+export type LineType = "AL-15" | "AL-20" | "AL-25" | "AL-32" | "AL-42" | "Columbia 4000" | "AL-5000" | "AM-35" | "AL-12 Shower Door" | "S-38 RPT" | "S-33 RPT" | "AL-25 TP" | "Tubular 40x80";
 export type GlassType = "Incoloro 3mm" | "Incoloro 4mm" | "Incoloro 5mm" | "Incoloro 6mm" | "Incoloro 8mm" | "Incoloro 10mm" | "Bronce 4mm" | "Bronce 5mm" | "Bronce 6mm" | "Espejo 4mm" | "Satén 4mm" | "Satén 5mm" | "Laminado 5mm" | "Laminado 6mm" | "Laminado 8mm" | "Laminado 10mm" | "Templado 10mm" | "Empavonado 4mm" | "Empavonado 5mm" | "DVH 4+9+4" | "Acrílico";
 export type ColorType = "Blanco" | "Negro" | "Mate" | "Titanio" | "Nogal" | "Roble Dorado";
 
+export interface Sheet {
+  id: string;
+  name: string;
+}
+
 export interface WindowSegment {
   id: string;
+  sheetId?: string;
   type: WindowSegmentType;
   line: LineType;
   glass: GlassType;
@@ -40,5 +46,6 @@ export interface SavedQuote {
   clientName: string;
   date: string; // ISO String
   segments: WindowSegment[];
+  sheets?: Sheet[];
   totalCost: number;
 }

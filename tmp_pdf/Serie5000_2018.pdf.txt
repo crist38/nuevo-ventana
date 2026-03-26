@@ -1,0 +1,35 @@
+32
+ALTURA MÁXIMA RECOMENDADA
+Norma NCH-523 Clasificación 10 V
+5002
+Riel Superior
+0.327 kg/m
+5005
+Cabezal
+0.327 kg/m
+5004
+Zócalo
+0.392 kg/m
+5001
+Riel Inferior
+0.306 kg/m
+PERFILES
+QUINCALLERÍA
+PESO TEÓRICO
+PAUTA PARA
+DOS HOJAS CORREDERAS
+VIDRIO
+33
+VENTANA CORREDERA
+Serie 5000
+5006
+Traslapo
+0.330 kg/m
+5007
+Pierna
+0.368 kg/m
+5003
+Jamba
+0.348 kg/m
+GuíaRodamientoSoporte
+
